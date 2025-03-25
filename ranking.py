@@ -63,6 +63,18 @@ selected_confidence = st.sidebar.multiselect(
     options=ranking_df["Confidence_Level"].unique(),
     default=ranking_df["Confidence_Level"].unique()
 )
+
+historical_question_filter = st.sidebar.text_input("Filter by Historical Question")
+
+# Filter Historical Questions DataFrame
+filtered_historical = ranking_df[ranking_df["Confidence_Level"].isin(selected_confidence)]
+if historical_question_filter:
+    filtered_historical = filtered_historical[
+        filtered_historical["Historical_Question"].str.contains(historical_question_filter, case=False)
+    ]
+
+
+
 generic_question_filter = st.sidebar.text_input("Filter by Generic Question")
 
 # Filter Generic Questions DataFrame
@@ -72,14 +84,7 @@ if generic_question_filter:
         filtered_generic["Generic_Question"].str.contains(generic_question_filter, case=False)
     ]
 
-historical_question_filter = st.sidebar.text_input("Filter by Historical Question")
 
-# Filter Generic Questions DataFrame
-filtered_historical = ranking_df[ranking_df["Confidence_Level"].isin(selected_confidence)]
-if historical_question_filter:
-    filtered_historical = filtered_historical[
-        filtered_historical["Historical_Question"].str.contains(historical_question_filter, case=False)
-    ]
 
 
 filtered_df = ranking_df[ranking_df["Confidence_Level"].isin(selected_confidence)]
@@ -95,16 +100,15 @@ if generic_question_filter:
 # ----------------------------------------
 # Dashboard Title & Overview
 # ----------------------------------------
-st.title("Generic Survey Question Dashboard")
-st.markdown("""
-This dashboard provides an overview of our generic survey questions along with similarity and ranking information.
-Use the sidebar to filter questions and explore detailed rankings and similarity relationships.
-""")
+st.title("ETC Institute Towards Generic Survey Dashboard")
+# st.markdown("""
+# This dashboard provides an overview of generic survey questions along with similarity and ranking information.
+# """)
 
 # ----------------------------------------
 # Main Layout: Two Columns
 # ----------------------------------------
-tabs = st.tabs(["Rank Table","Confidence Level Comparisons","Similarity Heatmap","Cluster Distribution","Word Clouds"])
+tabs = st.tabs(["Rank Table","Confidence Level Comparisons","Similarity Heatmap"])
 
 with tabs[1]:
     col1, col2 = st.columns(2)
@@ -125,7 +129,7 @@ with tabs[1]:
             conf_count,
             values='Count',
             names='confidence_level',
-            title="Proportion of Matches by Confidence Level",
+            title="Proportion of Matched Questions by Confidence Level",
             color='confidence_level',
             color_discrete_map={'High':'green', 'Medium':'orange', 'Low':'red'}
         )
@@ -134,37 +138,38 @@ with tabs[1]:
     
 
 with tabs[0]:
-    st.markdown("### Full Ranking Table")
+    
+    st.markdown("### Ranking Table")
     st.dataframe(filtered_df, use_container_width=True)
     
     
-    st.markdown("---")
+    # st.markdown("---")
 
     # ----------------------------------------
     # Ranking Section using Tabs
     # ----------------------------------------
-    st.subheader("Historical to Generic Question Rankings")
-    tabz = st.tabs(["Top 10 Ranked Matches","Top 20 Ranked Matches","Top 50 Ranked Matches","Top 100 Ranked Matches"])
+    # st.subheader("Historical to Generic Question Rankings")
+    # tabz = st.tabs(["Top 10 Ranked Matches","Top 20 Ranked Matches","Top 50 Ranked Matches","Top 100 Ranked Matches"])
 
-    with tabz[0]:
-        st.markdown("### Top 10 Ranked Matches (Rank <=10)")
-        top_matches = filtered_df[filtered_df["Rank"] <= 10]
-        st.dataframe(top_matches, use_container_width=True)
+    # with tabz[0]:
+    #     st.markdown("### Top 10 Ranked Matches (Rank <=10)")
+    #     top_matches = filtered_df[filtered_df["Rank"] <= 10]
+    #     st.dataframe(top_matches, use_container_width=True)
 
-    with tabz[1]:
-        st.markdown("### Top 20 Ranked Matches (Rank <=20)")
-        top_matches = filtered_df[filtered_df["Rank"] <= 20]
-        st.dataframe(top_matches, use_container_width=True)
+    # with tabz[1]:
+    #     st.markdown("### Top 20 Ranked Matches (Rank <=20)")
+    #     top_matches = filtered_df[filtered_df["Rank"] <= 20]
+    #     st.dataframe(top_matches, use_container_width=True)
 
-    with tabz[2]:
-        st.markdown("### Top 50 Ranked Matches (Rank <=50)")
-        top_matches = filtered_df[filtered_df["Rank"] <= 50]
-        st.dataframe(top_matches, use_container_width=True)
+    # with tabz[2]:
+    #     st.markdown("### Top 50 Ranked Matches (Rank <=50)")
+    #     top_matches = filtered_df[filtered_df["Rank"] <= 50]
+    #     st.dataframe(top_matches, use_container_width=True)
 
-    with tabz[3]:
-        st.markdown("### Top 100 Ranked Matches (Rank <=100)")
-        top_matches = filtered_df[filtered_df["Rank"] <= 100]
-        st.dataframe(top_matches, use_container_width=True)   
+    # with tabz[3]:
+    #     st.markdown("### Top 100 Ranked Matches (Rank <=100)")
+    #     top_matches = filtered_df[filtered_df["Rank"] <= 100]
+    #     st.dataframe(top_matches, use_container_width=True)   
 
 
 with tabs[2]:
@@ -180,69 +185,8 @@ with tabs[2]:
     sns.heatmap(similarity_matrix, cmap="coolwarm", annot=False)
     plt.title("Question Similarity Heatmap")
     st.pyplot(plt.gcf())  # Use st.pyplot() to render the figure in Streamlit
-with tabs[3]:
-    # cluster scatter
-    embeddings = np.array(embeddings_list)
-    # Use TSNE to reduce the dimensionality to 2 dimensions.
-    # - n_components=2: We want a 2D representation.
-    # - perplexity=30: A common value balancing local and global structure.
-    # - random_state=0: For reproducibility.
-   # TSNE to reduce embeddings to 2D.
-    tsne = TSNE(n_components=2, perplexity=30, random_state=0)
-    tsne_results = tsne.fit_transform(embeddings)
-
-    # Create a DataFrame for plotting.
-    plot_df = pd.DataFrame(tsne_results, columns=["tsne1", "tsne2"])
-    plot_df["cluster"] = clusters_df["fcluster"].values
-    plot_df["question"] = clusters_df["cleaned_question"].values
-    custom_colors = [
-        "#FF5733",  # red-orange
-        "#FF8D1A",  # orange
-        "#FFC300",  # yellow
-        "#C70039",  # dark red
-        "#900C3F",  # burgundy
-        "#FF0000",  # pure red
-        "#FF4500",  # orange-red
-        "#FFA07A",  # light salmon
-        "#FF6347",  # tomato
-        "#FF7F50"   # coral
-    ]
-    # Create an interactive scatter plot with Plotly.
-    fig = px.scatter(
-        plot_df, 
-        x="tsne1", 
-        y="tsne2", 
-        color="cluster", 
-        hover_data=["question"],
-        title="TSNE Visualization of Survey Question Clusters",
-        labels={"tsne1": "TSNE Component 1", "tsne2": "TSNE Component 2"},
-        color_discrete_sequence=custom_colors 
-    )
-
-    # Display the Plotly figure in Streamlit.
-    st.plotly_chart(fig, use_container_width=True)
-
-
-# Define a function to extract the question text from the survey data
-with tabs[4]:
-    #Word Clouds
-    # For each cluster, combine all question texts and generate a word cloud
     
 
-    clusters = np.sort(clusters_df["fcluster"].unique())
-    for cluster in clusters:
-        cluster_text = " ".join(clusters_df[clusters_df["fcluster"] == cluster]["cleaned_question"].tolist())
-        
-        # Generate word cloud
-        wordcloud = WordCloud(width=800, height=400, background_color='white').generate(cluster_text)
-        
-        # Plot word cloud
-        fig, ax = plt.subplots(figsize=(10, 5))
-        ax.imshow(wordcloud, interpolation="bilinear")
-        ax.axis("off")
-        ax.set_title(f"Word Cloud for Cluster {cluster}")
-        
-        st.pyplot(fig)
 
 st.markdown("---")
 
