@@ -1,11 +1,10 @@
-import streamlit as st
-import pandas as pd
-import plotly.express as px
-import pandas as pd
-from wordcloud import WordCloud
-import matplotlib.pyplot as plt
-from scipy.cluster.hierarchy import linkage, dendrogram
-import numpy as np
-from sklearn.manifold import TSNE
-import ast
-import seaborn as sns
+streamlit
+plotly
+pandas
+wordcloud
+matplotlib
+scipy
+numpy
+sklearn
+ast
+seaborn
