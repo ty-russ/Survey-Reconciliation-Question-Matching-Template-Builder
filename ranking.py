@@ -98,50 +98,56 @@ new_questions_df = None
 # ----------------------------------------
 # Sidebar Filters
 # ----------------------------------------
-st.sidebar.header("Filters")
-selected_confidence = st.sidebar.multiselect(
-    "Select Confidence Level",
-    options=ranking_df["Confidence_Level"].unique(),
-    default=ranking_df["Confidence_Level"].unique()
+
+selected_section = st.sidebar.radio(
+    "Select Filter Section", 
+    options=["Rank Table", "Generic Survey Template",]
 )
+filtered_df=ranking_df
+if selected_section == "Rank Table":
+    st.sidebar.header("Filters")
+    selected_confidence = st.sidebar.multiselect(
+        "Select Confidence Level",
+        options=ranking_df["Confidence_Level"].unique(),
+        default=ranking_df["Confidence_Level"].unique()
+    )
+    historical_question_filter = st.sidebar.text_input("Filter by Historical Question")
 
-historical_question_filter = st.sidebar.text_input("Filter by Historical Question")
-
-# Filter Historical Questions
-filtered_historical = ranking_df[ranking_df["Confidence_Level"].isin(selected_confidence)]
-if historical_question_filter:
-    filtered_historical = filtered_historical[
-        filtered_historical["Historical_Question"].str.contains(historical_question_filter, case=False)
-    ]
-
-
-
-generic_question_filter = st.sidebar.text_input("Filter by Generic Question")
-
-# Filter Generic Questions 
-filtered_generic = ranking_df[ranking_df["Confidence_Level"].isin(selected_confidence)]
-if generic_question_filter:
-    filtered_generic = filtered_generic[
-        filtered_generic["Generic_Question"].str.contains(generic_question_filter, case=False)
-    ]
+    # Filter Historical Questions
+    filtered_historical = ranking_df[ranking_df["Confidence_Level"].isin(selected_confidence)]
+    if historical_question_filter:
+        filtered_historical = filtered_historical[
+            filtered_historical["Historical_Question"].str.contains(historical_question_filter, case=False)
+        ]
 
 
 
+    generic_question_filter = st.sidebar.text_input("Filter by Generic Question")
 
-filtered_df = ranking_df[ranking_df["Confidence_Level"].isin(selected_confidence)]
-if historical_question_filter:
-  
-    filtered_df = filtered_historical
+    # Filter Generic Questions 
+    filtered_generic = ranking_df[ranking_df["Confidence_Level"].isin(selected_confidence)]
+    if generic_question_filter:
+        filtered_generic = filtered_generic[
+            filtered_generic["Generic_Question"].str.contains(generic_question_filter, case=False)
+        ]
+    filtered_df = ranking_df[ranking_df["Confidence_Level"].isin(selected_confidence)]
+    if historical_question_filter:
 
-if generic_question_filter:
-    filtered_df = filtered_generic
+        filtered_df = filtered_historical
 
-if st.button("Refresh"):
-    load_generic_template.clear()
-    load_updated_generic_template.clear()
-    load_matched_questions.clear()
-    load_ranking_data.clear()
-    st.experimental_rerun()
+    if generic_question_filter:
+        filtered_df = filtered_generic
+        
+if selected_section == "Generic Survey Template":
+    st.sidebar.header("Filters")
+    generic_question_filterr = st.sidebar.text_input("Filter by Generic Question")
+    # Filter Generic Questions 
+    filtered_generic_question = template_df
+    if generic_question_filterr:
+        filtered_generic_question = filtered_generic_question[
+            filtered_generic_question["generic_question"].str.contains(generic_question_filterr, case=False)
+        ]
+    
 
 # ----------------------------------------
 # Dashboard Title & Overview
@@ -150,6 +156,13 @@ st.title("Generic Survey Dashboard")
 # st.markdown("""
 # This dashboard provides an overview of generic survey questions along with similarity and ranking information.
 # """)
+
+if st.button("Refresh"):
+    load_generic_template.clear()
+    load_updated_generic_template.clear()
+    load_matched_questions.clear()
+    load_ranking_data.clear()
+    st.experimental_rerun()
 
 tabs = st.tabs(["Rank Table","Visualizations","Generic Survey Template","Generic Survey Enrichment"])
 
@@ -240,7 +253,7 @@ with tabs[1]:
 with tabs[2]:
     
     st.markdown("### Generic Survey Template")
-    st.dataframe(template_df, use_container_width=True)
+    st.dataframe(filtered_generic_question, use_container_width=True)
         
 with tabs[3]:
     # enrichment / refinement
@@ -299,7 +312,7 @@ with tabs[3]:
     # Display Generic Survey Template
     # ----------------------------------------
     st.markdown("### Current Generic Survey Template")
-    st.dataframe(template_df, use_container_width=True)
+    st.dataframe(filtered_generic_question, use_container_width=True)
 
     
     
