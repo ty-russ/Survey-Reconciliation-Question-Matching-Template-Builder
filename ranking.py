@@ -93,7 +93,7 @@ template_df = load_generic_template()
 updated_template_df = load_updated_generic_template()
 low_df = load_low_matched_questions()
 new_questions_df = None
-
+filtered_generic_question = template_df
 
 # ----------------------------------------
 # Sidebar Filters
@@ -260,7 +260,7 @@ with tabs[3]:
     
     input_questions = st.text_area(
         "Paste/Type Questions (comma separated)",
-        "How many cars do you see on the street at night?, Rate the level of noise in your area?"
+        "What is your Age?, Rate the level of noise in your area?"
     )
 
    
