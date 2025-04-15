@@ -11,14 +11,14 @@ GPT4ALL_API_URL = "https://7cc2-129-130-19-169.ngrok-free.app/v1/chat/completion
 API_HEADERS = {"Content-Type": "application/json"}
 
 # Load existing generic survey template
-towards_template_path = "/Users/tiruskimani/MSDATA/capstone/KSU/cleaned_generic_survey_questions.csv"
+towards_template_path = "./output/cleaned_generic_survey_questions.csv"
 towards_generic_df = pd.read_csv(towards_template_path)
 
 generic_template = pd.read_csv('./output/GenericSurvey.csv')
 
-low_match_csv_path = "/Users/tiruskimani/MSDATA/capstone/KSU/new/low_matched_survey_questions.csv"
-medium_match_csv_path = "/Users/tiruskimani/MSDATA/capstone/KSU/new/medium_matched_survey_questions.csv"
-high_match_csv_path = "/Users/tiruskimani/MSDATA/capstone/KSU/new/high_matched_survey_questions.csv"
+low_match_csv_path = "./output/low_matched_survey_questions.csv"
+medium_match_csv_path = "./output/medium_matched_survey_questions.csv"
+high_match_csv_path = "./output/high_matched_survey_questions.csv"
 # load matches
 high_df = pd.read_csv(high_match_csv_path);
 medium_df = pd.read_csv(medium_match_csv_path);
