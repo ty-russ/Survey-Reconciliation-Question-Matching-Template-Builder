@@ -111,43 +111,94 @@ if selected_section == "Rank Table":
         options=ranking_df["Confidence_Level"].unique(),
         default=ranking_df["Confidence_Level"].unique()
     )
-    historical_question_filter = st.sidebar.text_input("Filter by Historical Question")
+    # historical_question_filter = st.sidebar.text_input("Filter by Historical Question")
 
-    # Filter Historical Questions
+    # # Filter Historical Questions
+    # filtered_historical = ranking_df[ranking_df["Confidence_Level"].isin(selected_confidence)]
+    # if historical_question_filter:
+    #     filtered_historical = filtered_historical[
+    #         filtered_historical["Historical_Question"].str.contains(historical_question_filter, case=False)
+    #     ]
+
+
+      # Get a sorted list of unique generic questions from your ranking DataFrame.
+    historical_question_options = sorted(ranking_df["Historical_Question"].unique().tolist())
+
+    # Use st.multiselect (or st.selectbox) to create a searchable dropdown in the sidebar.
+    selected_historical_questions = st.sidebar.multiselect(
+        "Filter by Historical Question", 
+        options=historical_question_options,
+        help="Type to search for generic questions and select one or more"
+    )
+
+    # Filter Generic Questions by the selected confidence level first.
     filtered_historical = ranking_df[ranking_df["Confidence_Level"].isin(selected_confidence)]
-    if historical_question_filter:
-        filtered_historical = filtered_historical[
-            filtered_historical["Historical_Question"].str.contains(historical_question_filter, case=False)
-        ]
+
+    # If any generic question(s) are selected, filter the DataFrame accordingly.
+    if selected_historical_questions:
+        filtered_generic = filtered_historical[filtered_historical["Historical_Question"].isin(selected_historical_questions)]
 
 
+    # generic_question_filter = st.sidebar.text_input("Filter by Generic Question")
 
-    generic_question_filter = st.sidebar.text_input("Filter by Generic Question")
+    # # Filter Generic Questions 
+    # filtered_generic = ranking_df[ranking_df["Confidence_Level"].isin(selected_confidence)]
+    # if generic_question_filter:
+    #     filtered_generic = filtered_generic[
+    #         filtered_generic["Generic_Question"].str.contains(generic_question_filter, case=False)
+    #     ]
+        
+    # Get a sorted list of unique generic questions from your ranking DataFrame.
+    generic_question_options = sorted(ranking_df["Generic_Question"].unique().tolist())
 
-    # Filter Generic Questions 
+    # Use st.multiselect (or st.selectbox) to create a searchable dropdown in the sidebar.
+    selected_generic_questions = st.sidebar.multiselect(
+        "Filter by Generic Question", 
+        options=generic_question_options,
+        help="Type to search for generic questions and select one or more"
+    )
+
+    # Filter Generic Questions by the selected confidence level first.
     filtered_generic = ranking_df[ranking_df["Confidence_Level"].isin(selected_confidence)]
-    if generic_question_filter:
-        filtered_generic = filtered_generic[
-            filtered_generic["Generic_Question"].str.contains(generic_question_filter, case=False)
-        ]
+
+    # If any generic question(s) are selected, filter the DataFrame accordingly.
+    if selected_generic_questions:
+        filtered_generic = filtered_generic[filtered_generic["Generic_Question"].isin(selected_generic_questions)]
+    
     filtered_df = ranking_df[ranking_df["Confidence_Level"].isin(selected_confidence)]
-    if historical_question_filter:
+    if selected_historical_questions:
 
         filtered_df = filtered_historical
 
-    if generic_question_filter:
+    if selected_generic_questions:
         filtered_df = filtered_generic
         
 if selected_section == "Generic Survey Template":
     st.sidebar.header("Filters")
-    generic_question_filterr = st.sidebar.text_input("Filter by Generic Question")
-    # Filter Generic Questions 
-    filtered_generic_question = template_df
-    if generic_question_filterr:
-        filtered_generic_question = filtered_generic_question[
-            filtered_generic_question["generic_question"].str.contains(generic_question_filterr, case=False)
-        ]
+    # generic_question_filterr = st.sidebar.text_input("Filter by Generic Question")
+    # # Filter Generic Questions 
+    # filtered_generic_question = template_df
+    # if generic_question_filterr:
+    #     filtered_generic_question = filtered_generic_question[
+    #         filtered_generic_question["generic_question"].str.contains(generic_question_filterr, case=False)
+    #     ]
     
+      # Get a sorted list of unique generic questions from your ranking DataFrame.
+    generic_question_option = sorted(template_df["generic_question"].unique().tolist())
+
+    # Use st.multiselect (or st.selectbox) to create a searchable dropdown in the sidebar.
+    selected_generic_questions = st.sidebar.multiselect(
+        "Filter by Generic Question", 
+        options=generic_question_option,
+        help="Type to search for generic questions and select one or more"
+    )
+
+    # Filter Generic Questions by the selected confidence level first.
+    filtered_generic_question = template_df
+
+    # If any generic question(s) are selected, filter the DataFrame accordingly.
+    if selected_generic_questions:
+        filtered_generic_question = filtered_generic_question[filtered_generic_question["generic_question"].isin(selected_generic_questions)]
 
 # ----------------------------------------
 # Dashboard Title & Overview
