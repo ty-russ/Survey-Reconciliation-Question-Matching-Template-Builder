@@ -169,13 +169,7 @@ tabs = st.tabs(["Rank Table","Visualizations","Generic Survey Template","Generic
 
 
 with tabs[0]:
-    
-    st.markdown("### Full Ranking Table")
-    st.dataframe(filtered_df, use_container_width=True)
-    
-    st.markdown("---")
-
-    # ----------------------------------------
+      # ----------------------------------------
     # Ranking Section using Tabs
     # ----------------------------------------
     tabz = st.tabs(["Top 100 Matches","Middle Matches","Bottom 100 Matches"])
@@ -209,6 +203,12 @@ with tabs[0]:
             st.dataframe(bottom_matches, use_container_width=True)
         else:
             st.info("Not enough data for bottom matches.")
+
+    
+    st.markdown("---")
+
+    st.markdown("### Full Ranking Table")
+    st.dataframe(filtered_df, use_container_width=True)
 
       
 with tabs[1]:
