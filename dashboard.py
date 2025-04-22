@@ -143,7 +143,7 @@ if selected_section == "Rank Table":
 
     # If any generic question(s) are selected, filter the DataFrame accordingly.
     if selected_historical_questions:
-        filtered_generic = filtered_historical[filtered_historical["Historical_Question"].isin(selected_historical_questions)]
+        filtered_historical = filtered_historical[filtered_historical["Historical_Question"].isin(selected_historical_questions)]
 
 
     # generic_question_filter = st.sidebar.text_input("Filter by Generic Question")
@@ -333,7 +333,7 @@ with tabs[3]:
     
     input_questions = st.text_area(
         "Paste/Type Questions (comma separated)",
-        "What is your Age?, Rate the level of noise in your area?"
+        "Rate satisfaction on city's communication items?, Rate the level of noise in your area?,please check your sources for information for city services "
     )
 
    
