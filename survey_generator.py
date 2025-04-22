@@ -50,6 +50,7 @@ def generate_survey_json(questions):
               "**Strict JSON Output Format (DO NOT MODIFY):**\n"
               "[\n"
               "  {\n"
+              "    \"group\": \"Refined group/category of question e.g perception, maitenence, security,parks and recreation, satisfaction etc.\",\n"
               "    \"question\": \"Your rephrased generic question\",\n"
               "    \"options\": [\"Option 1\", \"Option 2\", \"Option 3\", \"Option 4\", \"Option 5\"]\n"
               "  },\n"
@@ -64,7 +65,7 @@ def generate_survey_json(questions):
             "model": "llama-3.2-3b-instruct",
             "messages": prompt,
             "temperature": 0.7,
-            "max_tokens": -1,
+            # "max_tokens": -1,
         }
     try:
         response = requests.post(GPT4ALL_API_URL, headers=API_HEADERS, json=payload)
@@ -97,6 +98,7 @@ def generate_new_questions(questions):
     llm_response = generate_survey_json(questions)
     for new_question_data in llm_response:
         new_questions_data.append({
+            "question_group": new_question_data.get("group"),
             "generic_question": new_question_data.get("question"),
             # "question_tail_prompt": None,
             **{f"option_{i+1}": new_question_data["options"][i] if i < len(new_question_data["options"]) else None for i in range(7)}

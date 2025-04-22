@@ -35,7 +35,7 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
-logo_path = "logo.webp"  # Replace with your logo file path or URL.
+logo_path = "logo.webp"  
 st.image(logo_path, width=200)
 
 # ----------------------------------------
@@ -72,6 +72,11 @@ def load_generic_template():
     return pd.DataFrame(template_df)
 
 @st.cache_data
+def load_refined_template():    
+    refined_df = pd.read_csv("./output/RefinedSurvey.csv")
+    return pd.DataFrame(refined_df)
+
+@st.cache_data
 def load_low_matched_questions():    
     low_df = pd.read_csv("./output/low_matched_survey_questions.csv")
     return pd.DataFrame(low_df)
@@ -90,10 +95,12 @@ similarity_matrix_df = load_similarity_matrix()
 ranking_df = load_ranking_data()
 clusters_df = load_cluster_questions()
 template_df = load_generic_template()
+refined_df = load_refined_template()
 updated_template_df = load_updated_generic_template()
 low_df = load_low_matched_questions()
 new_questions_df = None
 filtered_generic_question = template_df
+filtered_refined_question = refined_df
 
 # ----------------------------------------
 # Sidebar Filters
@@ -128,7 +135,7 @@ if selected_section == "Rank Table":
     selected_historical_questions = st.sidebar.multiselect(
         "Filter by Historical Question", 
         options=historical_question_options,
-        help="Type to search for generic questions and select one or more"
+        help="Type to search for historical questions and select one or more"
     )
 
     # Filter Generic Questions by the selected confidence level first.
@@ -175,18 +182,11 @@ if selected_section == "Rank Table":
         
 if selected_section == "Generic Survey Template":
     st.sidebar.header("Filters")
-    # generic_question_filterr = st.sidebar.text_input("Filter by Generic Question")
-    # # Filter Generic Questions 
-    # filtered_generic_question = template_df
-    # if generic_question_filterr:
-    #     filtered_generic_question = filtered_generic_question[
-    #         filtered_generic_question["generic_question"].str.contains(generic_question_filterr, case=False)
-    #     ]
     
-      # Get a sorted list of unique generic questions from your ranking DataFrame.
+      # sorted list of unique generic questions from ranking DF.
     generic_question_option = sorted(template_df["generic_question"].unique().tolist())
-
-    # Use st.multiselect (or st.selectbox) to create a searchable dropdown in the sidebar.
+     
+    # searchable dropdown 
     selected_generic_questions = st.sidebar.multiselect(
         "Filter by Generic Question", 
         options=generic_question_option,
@@ -196,9 +196,28 @@ if selected_section == "Generic Survey Template":
     # Filter Generic Questions by the selected confidence level first.
     filtered_generic_question = template_df
 
+
     # If any generic question(s) are selected, filter the DataFrame accordingly.
     if selected_generic_questions:
         filtered_generic_question = filtered_generic_question[filtered_generic_question["generic_question"].isin(selected_generic_questions)]
+        
+    
+   
+    refined_question_option = sorted(refined_df["generic_question"].unique().tolist())
+     
+
+    selected_refined_questions = st.sidebar.multiselect(
+        "Filter by Refined Question", 
+        options=refined_question_option,
+        help="Type to search for refine questions and select one or more"
+    )
+
+
+    filtered_refined_question = refined_df
+
+
+    if selected_refined_questions:
+        filtered_refined_question = filtered_refined_question[filtered_refined_question["generic_question"].isin(selected_refined_questions)]
 
 # ----------------------------------------
 # Dashboard Title & Overview
@@ -210,12 +229,13 @@ st.title("Generic Survey Dashboard")
 
 if st.button("Refresh"):
     load_generic_template.clear()
+    load_refined_template.clear()
     load_updated_generic_template.clear()
     load_matched_questions.clear()
     load_ranking_data.clear()
     st.experimental_rerun()
 
-tabs = st.tabs(["Rank Table","Visualizations","Generic Survey Template","Generic Survey Enrichment"])
+tabs = st.tabs(["Rank Table","Visualizations","Generic Survey Template","AI Generic Survey Enrichment"])
 
 
 
@@ -305,6 +325,8 @@ with tabs[2]:
     
     st.markdown("### Generic Survey Template")
     st.dataframe(filtered_generic_question, use_container_width=True)
+    st.markdown("### Refined Generic Survey Template (AI)")
+    st.dataframe(filtered_refined_question, use_container_width=True)
         
 with tabs[3]:
     # enrichment / refinement
@@ -369,51 +391,3 @@ with tabs[3]:
     
 st.markdown("---")
 
-# with tabs[2]:
-#     # # Bar Chart: Distribution of Ranks
-#     # rank_count = matched_questions_df.groupby('Rank').size().reset_index(name='Count')
-#     # fig_rank = px.bar(rank_count, x='Rank', y='Count', 
-#     #                   title="Distribution of Ranks", color='Rank')
-#     # st.plotly_chart(fig_rank, use_container_width=True)
-
-         
-# col1, col2 = st.columns(2)
-
-# with col1:
-#     st.subheader("Generic Survey Questions")
-#     st.dataframe(filtered_generic, use_container_width=True)
-
-
-    
-    
- 
-    
-    
-    
-# import numpy as np
-# n = 500  # assume 500 questions
-
-
-# st.subheader("Similarity Matrix Heatmap")
-
-# # Sidebar: Let the user choose how many questions to display
-# max_display = st.sidebar.slider(
-#     "Number of Questions to Display (Rows & Columns)",
-#     min_value=10,
-#     max_value=min(100, n),  # limit maximum to 100 for readability
-#     value=50,
-#     step=5
-# )
-
-# # Subset the similarity matrix based on the user's selection
-# subset_matrix = similarity_matrix_df.iloc[:max_display, :max_display]
-
-# # Plot the heatmap for the subset
-# fig = px.imshow(
-#     subset_matrix,
-#     text_auto=True,
-#     color_continuous_scale='RdBu',
-#     title=f"Question Similarity Matrix (First {max_display} Questions)"
-# )
-
-# st.plotly_chart(fig, use_container_width=True)
