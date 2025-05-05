@@ -381,7 +381,7 @@ if st.button("Refresh"):
     load_updated_generic_template.clear()
     load_matched_questions.clear()
     load_ranking_data.clear()
-    del st.session_state["new_questions_df"]
+    # del st.session_state["new_questions_df"]
     load_generic_template.clear()
     st.experimental_rerun()
 

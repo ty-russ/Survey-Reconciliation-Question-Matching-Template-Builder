@@ -7,12 +7,12 @@ import os
 
 # Variables for local LLM Studio server instance
 # GPT4ALL_API_URL = "http://localhost:1234/v1/chat/completions"
-GPT4ALL_API_URL = "https://7cc2-129-130-19-169.ngrok-free.app/v1/chat/completions"
+GPT4ALL_API_URL = " https://8ada-129-130-19-169.ngrok-free.app/v1/chat/completions"
 API_HEADERS = {"Content-Type": "application/json"}
 
 
 
-generic_template = pd.read_csv('./output/GenericSurvey.csv')
+generic_template = pd.read_csv('./output/GenericSurvey_combined.csv')
 
 
 low_match_csv_path = "output/low_matched_survey_questions.csv"
@@ -109,13 +109,13 @@ def generate_new_questions(questions):
 
 
 def update_survey(row):
-    generic_template = pd.read_csv('./output/GenericSurvey.csv')
+    generic_template = pd.read_csv('./output/GenericSurvey_combined.csv')
     print("Row",row)
     new_questions_df = pd.DataFrame([row])
     print("new_questions_df", new_questions_df)
     # Append the new questions to the generic survey template.
     updated_survey_df = pd.concat([generic_template, new_questions_df], ignore_index=True)
     # Save the updated template.
-    updated_survey_path = "./output/GenericSurvey.csv"
+    updated_survey_path = "./output/GenericSurvey_combined.csv"
     updated_survey_df.to_csv(updated_survey_path, index=False)
     return True
