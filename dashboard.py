@@ -383,7 +383,7 @@ if st.button("Refresh"):
     load_ranking_data.clear()
     # del st.session_state["new_questions_df"]
     load_generic_template.clear()
-    st.experimental_rerun()
+    # st.experimental_rerun()
 
 tabs = st.tabs(["Rank Table","Visualizations","Generic Survey Template","AI Generic Survey Enrichment"])
 
