@@ -68,7 +68,7 @@ def load_cluster_questions():
 
 @st.cache_data
 def load_generic_template():    
-    template_df = pd.read_csv("./output/GenericSurvey.csv")
+    template_df = pd.read_csv("./output/GenericSurvey_combined.csv")
     return pd.DataFrame(template_df)
 
 @st.cache_data
@@ -83,7 +83,7 @@ def load_low_matched_questions():
 
 @st.cache_data
 def load_updated_generic_template():    
-    updated_df = pd.read_csv("./output/GenericSurvey.csv")
+    updated_df = pd.read_csv("./output/GenericSurvey_combined.csv")
     return pd.DataFrame(updated_df)
 
 
@@ -128,22 +128,82 @@ if selected_section == "Rank Table":
     #     ]
 
 
-      # Get a sorted list of unique generic questions from your ranking DataFrame.
+    #   Get a sorted list of unique generic questions from your ranking DataFrame.
     historical_question_options = sorted(ranking_df["Historical_Question"].unique().tolist())
-
-    # Use st.multiselect (or st.selectbox) to create a searchable dropdown in the sidebar.
-    selected_historical_questions = st.sidebar.multiselect(
-        "Filter by Historical Question", 
-        options=historical_question_options,
-        help="Type to search for historical questions and select one or more"
+    
+    
+    
+        # Sidebar input - Free typing search
+    search_text = st.sidebar.text_input(
+        "Search Historical Question", 
+        help="Type part of a question to find matches or enter freely"
     )
 
-    # Filter Generic Questions by the selected confidence level first.
+    # Step 1: Filter by confidence first
     filtered_historical = ranking_df[ranking_df["Confidence_Level"].isin(selected_confidence)]
 
-    # If any generic question(s) are selected, filter the DataFrame accordingly.
-    if selected_historical_questions:
-        filtered_historical = filtered_historical[filtered_historical["Historical_Question"].isin(selected_historical_questions)]
+    # Step 2: Search Matching Options
+    matching_questions = []
+    if search_text:
+        matching_questions = filtered_historical[
+            filtered_historical["Historical_Question"].str.contains(search_text, case=False, na=False)
+        ]["Historical_Question"].unique().tolist()
+
+    # Step 3: Let user select if any matching questions found
+    if matching_questions:
+        selected_historical_questions = st.sidebar.selectbox(
+            "Select matching question (or keep typing)", 
+            options=["[Typed Text]"] + matching_questions, 
+            index=0
+        )
+    else:
+        selected_historical_questions = "[Typed Text]"
+
+    # Step 4: Final filter
+    if search_text:
+        if selected_historical_questions == "[Typed Text]":
+            # If user sticks with typed input
+            filtered_historical = filtered_historical[
+                filtered_historical["Historical_Question"].str.contains(search_text, case=False, na=False)
+            ]
+        else:
+            # If user selects a matching question exactly
+            filtered_historical = filtered_historical[
+                filtered_historical["Historical_Question"] == selected_historical_questions
+            ]
+        
+    # selected_historical_questions = st.sidebar.multiselect(
+    #     "Filter by Historical Question", 
+    #     options=historical_question_options,
+    #     help="Type to search for historical questions and select one or more"
+    # )
+
+    # # Start by filtering based on selected confidence levels
+    # filtered_historical = ranking_df[ranking_df["Confidence_Level"].isin(selected_confidence)]
+
+    # # If any historical question(s) are selected
+    # if selected_historical_questions:
+    #     # Build a mask: check if Historical_Question contains ANY of the typed/selected text
+    #     mask = False
+    #     for query in selected_historical_questions:
+    #         mask |= filtered_historical["Historical_Question"].str.contains(query, case=False, na=False)
+
+    #     # Apply the combined mask
+    #     filtered_historical = filtered_historical[mask]
+
+    # # Use st.multiselect (or st.selectbox) to create a searchable dropdown in the sidebar.
+    # selected_historical_questions = st.sidebar.multiselect(
+    #     "Filter by Historical Question", 
+    #     options=historical_question_options,
+    #     help="Type to search for historical questions and select one or more"
+    # )
+
+    # # Filter Generic Questions by the selected confidence level first.
+    # filtered_historical = ranking_df[ranking_df["Confidence_Level"].isin(selected_confidence)]
+
+    # # If any generic question(s) are selected, filter the DataFrame accordingly.
+    # if selected_historical_questions:
+    #     filtered_historical = filtered_historical[filtered_historical["Historical_Question"].isin(selected_historical_questions)]
 
 
     # generic_question_filter = st.sidebar.text_input("Filter by Generic Question")
@@ -154,11 +214,98 @@ if selected_section == "Rank Table":
     #     filtered_generic = filtered_generic[
     #         filtered_generic["Generic_Question"].str.contains(generic_question_filter, case=False)
     #     ]
-        
-    # Get a sorted list of unique generic questions from your ranking DataFrame.
-    generic_question_options = sorted(ranking_df["Generic_Question"].unique().tolist())
+    
+    
+    #     # Get a sorted list of unique generic questions from your ranking DataFrame.
+    # historical_question_options = sorted(ranking_df["Historical_Question"].unique().tolist())
+    
+    #    # Sidebar input - Free typing search
+    # search_hist_text = st.sidebar.text_input(
+    #     "Search Historical Question", 
+    #     help="Type part of a question to find matches or enter freely"
+    # )
 
-    # Use st.multiselect (or st.selectbox) to create a searchable dropdown in the sidebar.
+    # # Step 1: Filter by confidence first
+    # filtered_historical = ranking_df[ranking_df["Confidence_Level"].isin(selected_confidence)]
+
+    # # Step 2: Search Matching Options
+    # matching_hist_questions = []
+    # if search_hist_text:
+    #     matching_gen_questions = filtered_historical[
+    #         filtered_historical["Historical_Question"].str.contains(search_hist_text, case=False, na=False)
+    #     ]["Historical_Question"].unique().tolist()
+
+    # # Step 3: Let user select if any matching questions found
+    # if matching_hist_questions:
+    #     selected_historical_questions = st.sidebar.selectbox(
+    #         "Select matching question (or keep typing)", 
+    #         options=["[Typed Text]"] + matching_hist_questions, 
+    #         index=0
+    #     )
+    # else:
+    #     selected_historical_questions = "[Typed Text]"
+
+    # # Step 4: Final filter
+    # if search_hist_text:
+    #     if selected_historical_questions == "[Typed Text]":
+    #         # If user sticks with typed input
+    #         filtered_historical = filtered_historical[
+    #             filtered_historical["Historical_Question"].str.contains(search_hist_text, case=False, na=False)
+    #         ]
+    #     else:
+    #         # If user selects a matching question exactly
+    #         filtered_historical = filtered_historical[
+    #             filtered_historical["Historical_Question"] == selected_historical_questions
+    #         ]
+    
+    
+    
+    
+    #---------_generic---------------------
+        
+    # # Get a sorted list of unique generic questions from your ranking DataFrame.
+    generic_question_options = sorted(ranking_df["Generic_Question"].unique().tolist())
+    
+    #    # Sidebar input - Free typing search
+    # search_gen_text = st.sidebar.text_input(
+    #     "Search generic Question", 
+    #     help="Type part of a question to find matches or enter freely"
+    # )
+
+    # # Step 1: Filter by confidence first
+    # filtered_generic = ranking_df[ranking_df["Confidence_Level"].isin(selected_confidence)]
+
+    # # Step 2: Search Matching Options
+    # matching_gen_questions = []
+    # if search_gen_text:
+    #     matching_gen_questions = filtered_generic[
+    #         filtered_generic["Generic_Question"].str.contains(search_gen_text, case=False, na=False)
+    #     ]["Generic_Question"].unique().tolist()
+
+    # # Step 3: Let user select if any matching questions found
+    # if matching_gen_questions:
+    #     selected_generic_questions = st.sidebar.selectbox(
+    #         "Select matching question (or keep typing)", 
+    #         options=["[Typed Text]"] + matching_gen_questions, 
+    #         index=0
+    #     )
+    # else:
+    #     selected_generic_questions = "[Typed Text]"
+
+    # # Step 4: Final filter
+    # if search_gen_text:
+    #     if selected_generic_questions == "[Typed Text]":
+    #         # If user sticks with typed input
+    #         filtered_generic = filtered_generic[
+    #             filtered_generic["Generic_Question"].str.contains(search_gen_text, case=False, na=False)
+    #         ]
+    #     else:
+    #         # If user selects a matching question exactly
+    #         filtered_generic = filtered_generic[
+    #             filtered_generic["Generic_Question"] == selected_generic_questions
+    #         ]
+
+    # # Use st.multiselect (or st.selectbox) to create a searchable dropdown in the sidebar.
     selected_generic_questions = st.sidebar.multiselect(
         "Filter by Generic Question", 
         options=generic_question_options,
@@ -173,8 +320,9 @@ if selected_section == "Rank Table":
         filtered_generic = filtered_generic[filtered_generic["Generic_Question"].isin(selected_generic_questions)]
     
     filtered_df = ranking_df[ranking_df["Confidence_Level"].isin(selected_confidence)]
+    
+    
     if selected_historical_questions:
-
         filtered_df = filtered_historical
 
     if selected_generic_questions:
@@ -233,6 +381,8 @@ if st.button("Refresh"):
     load_updated_generic_template.clear()
     load_matched_questions.clear()
     load_ranking_data.clear()
+    del st.session_state["new_questions_df"]
+    load_generic_template.clear()
     st.experimental_rerun()
 
 tabs = st.tabs(["Rank Table","Visualizations","Generic Survey Template","AI Generic Survey Enrichment"])
