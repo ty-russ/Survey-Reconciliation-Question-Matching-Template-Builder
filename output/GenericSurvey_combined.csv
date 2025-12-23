@@ -125,3 +125,6 @@ city maintenance,City Maintenance. Please rate your satisfaction with each of th
 ,"Please rate each of the following characteristics as they relate to [city name] as a whole. [. Access to affordable, quality housing]",Good,Poor,Fair,Don't Know,Excellent,,,,,
 ,Please describe your race/ethnicity.,Hispanic,Multi american,"German, Slovak, Rusyn, Irish",Na ,Hispanic ,Iranian American,Biracial,Mixed,NA ,Other 
 ,Please rate your satisfaction with each of the following maintenance items. [. Mowing and trimming along city streets and other public areas],Satisfied,Very Satisfied,Neutral,Dissatisfied,Very Dissatisfied,Don't Know,,,,
+Public Services,How would you rate the accuracy and reliability of city services?,Very Accurate,Accurate,Neutral,Inaccurate,Extremely Inaccurate,,,,,
+Perception,How would you rate the level of noise in your area?,Very Quiet,Quiet,Average,Noisy,Extremely Noisy,,,,,
+trust,How reliable do you think the traffic control measures are?,Very Reliable,Reliable,Neutral,Unreliable,Very Unreliable,,,,,
