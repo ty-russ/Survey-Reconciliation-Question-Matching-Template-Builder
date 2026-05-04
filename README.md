@@ -5,7 +5,7 @@
 - Provide an interactive Streamlit dashboard for exploration, filtering, visualization, and AI‑driven enrichment.
 - Produce ready-to-use CSV templates for downstream survey administration and analytics.
 
-## Key outcomes (portfolio-ready)
+## Key outcomes 
 - A reproducible workflow that converts noisy historical questions into a structured generic template.
 - Interactive dashboard with filters, ranking tables, visualizations (bar, pie, heatmap), and template editing.
 - Automated AI-assisted generation of generic questions + multiple-choice options for rapid template enrichment.
